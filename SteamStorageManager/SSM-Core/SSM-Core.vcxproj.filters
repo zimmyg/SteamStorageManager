@@ -62,9 +62,4 @@
       <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_ssm.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-  </ItemGroup>
 </Project>

@@ -13,17 +13,16 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QColumnView>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QListView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTableView>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -34,15 +33,15 @@ class Ui_ssmClass
 public:
     QWidget *centralWidget;
     QGridLayout *gridLayout;
-    QLabel *FastStorageLabel;
-    QLabel *MassStorageLabel;
-    QColumnView *FastStorageView;
+    QLabel *fastStorageLabel;
+    QLabel *massStorageLabel;
     QVBoxLayout *verticalLayout;
     QSpacerItem *verticalSpacer;
-    QPushButton *MoveToFastButton;
-    QPushButton *MoveToMassButton;
+    QPushButton *moveToFastButton;
+    QPushButton *moveToMassButton;
     QSpacerItem *verticalSpacer_2;
-    QTableView *MassStorageView;
+    QListView *fastStorageView;
+    QListView *massStorageView;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuHelp;
@@ -60,24 +59,17 @@ public:
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
-        FastStorageLabel = new QLabel(centralWidget);
-        FastStorageLabel->setObjectName(QStringLiteral("FastStorageLabel"));
-        FastStorageLabel->setAlignment(Qt::AlignCenter);
+        fastStorageLabel = new QLabel(centralWidget);
+        fastStorageLabel->setObjectName(QStringLiteral("fastStorageLabel"));
+        fastStorageLabel->setAlignment(Qt::AlignCenter);
 
-        gridLayout->addWidget(FastStorageLabel, 0, 0, 1, 1);
+        gridLayout->addWidget(fastStorageLabel, 0, 0, 1, 1);
 
-        MassStorageLabel = new QLabel(centralWidget);
-        MassStorageLabel->setObjectName(QStringLiteral("MassStorageLabel"));
-        MassStorageLabel->setAlignment(Qt::AlignCenter);
+        massStorageLabel = new QLabel(centralWidget);
+        massStorageLabel->setObjectName(QStringLiteral("massStorageLabel"));
+        massStorageLabel->setAlignment(Qt::AlignCenter);
 
-        gridLayout->addWidget(MassStorageLabel, 0, 2, 1, 1);
-
-        FastStorageView = new QColumnView(centralWidget);
-        FastStorageView->setObjectName(QStringLiteral("FastStorageView"));
-        FastStorageView->setFrameShape(QFrame::Box);
-        FastStorageView->setIconSize(QSize(10, 10));
-
-        gridLayout->addWidget(FastStorageView, 1, 0, 1, 1);
+        gridLayout->addWidget(massStorageLabel, 0, 2, 1, 1);
 
         verticalLayout = new QVBoxLayout();
         verticalLayout->setSpacing(6);
@@ -86,15 +78,15 @@ public:
 
         verticalLayout->addItem(verticalSpacer);
 
-        MoveToFastButton = new QPushButton(centralWidget);
-        MoveToFastButton->setObjectName(QStringLiteral("MoveToFastButton"));
+        moveToFastButton = new QPushButton(centralWidget);
+        moveToFastButton->setObjectName(QStringLiteral("moveToFastButton"));
 
-        verticalLayout->addWidget(MoveToFastButton);
+        verticalLayout->addWidget(moveToFastButton);
 
-        MoveToMassButton = new QPushButton(centralWidget);
-        MoveToMassButton->setObjectName(QStringLiteral("MoveToMassButton"));
+        moveToMassButton = new QPushButton(centralWidget);
+        moveToMassButton->setObjectName(QStringLiteral("moveToMassButton"));
 
-        verticalLayout->addWidget(MoveToMassButton);
+        verticalLayout->addWidget(moveToMassButton);
 
         verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
@@ -103,12 +95,23 @@ public:
 
         gridLayout->addLayout(verticalLayout, 1, 1, 1, 1);
 
-        MassStorageView = new QTableView(centralWidget);
-        MassStorageView->setObjectName(QStringLiteral("MassStorageView"));
-        MassStorageView->setFrameShape(QFrame::Box);
-        MassStorageView->setIconSize(QSize(10, 10));
+        fastStorageView = new QListView(centralWidget);
+        fastStorageView->setObjectName(QStringLiteral("fastStorageView"));
+        fastStorageView->setFrameShape(QFrame::Box);
+        fastStorageView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        fastStorageView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        fastStorageView->setIconSize(QSize(10, 10));
 
-        gridLayout->addWidget(MassStorageView, 1, 2, 1, 1);
+        gridLayout->addWidget(fastStorageView, 1, 0, 1, 1);
+
+        massStorageView = new QListView(centralWidget);
+        massStorageView->setObjectName(QStringLiteral("massStorageView"));
+        massStorageView->setFrameShape(QFrame::Box);
+        massStorageView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        massStorageView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        massStorageView->setIconSize(QSize(10, 10));
+
+        gridLayout->addWidget(massStorageView, 1, 2, 1, 1);
 
         ssmClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(ssmClass);
@@ -130,6 +133,8 @@ public:
         menuBar->addAction(menuOptions->menuAction());
 
         retranslateUi(ssmClass);
+        QObject::connect(fastStorageView, SIGNAL(clicked(QModelIndex)), massStorageView, SLOT(clearSelection()));
+        QObject::connect(massStorageView, SIGNAL(clicked(QModelIndex)), fastStorageView, SLOT(clearSelection()));
 
         QMetaObject::connectSlotsByName(ssmClass);
     } // setupUi
@@ -137,10 +142,10 @@ public:
     void retranslateUi(QMainWindow *ssmClass)
     {
         ssmClass->setWindowTitle(QApplication::translate("ssmClass", "Steam StorageManager", 0));
-        FastStorageLabel->setText(QApplication::translate("ssmClass", "Fast Storage: ", 0));
-        MassStorageLabel->setText(QApplication::translate("ssmClass", "Mass Storage: ", 0));
-        MoveToFastButton->setText(QApplication::translate("ssmClass", "<--", 0));
-        MoveToMassButton->setText(QApplication::translate("ssmClass", "-->", 0));
+        fastStorageLabel->setText(QApplication::translate("ssmClass", "Fast Storage: ", 0));
+        massStorageLabel->setText(QApplication::translate("ssmClass", "Mass Storage: ", 0));
+        moveToFastButton->setText(QApplication::translate("ssmClass", "<--", 0));
+        moveToMassButton->setText(QApplication::translate("ssmClass", "-->", 0));
         menuFile->setTitle(QApplication::translate("ssmClass", "File", 0));
         menuHelp->setTitle(QApplication::translate("ssmClass", "Help", 0));
         menuOptions->setTitle(QApplication::translate("ssmClass", "Options", 0));

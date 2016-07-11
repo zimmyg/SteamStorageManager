@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QLabel" name="FastStorageLabel">
+     <widget class="QLabel" name="fastStorageLabel">
       <property name="text">
        <string>Fast Storage: </string>
       </property>
@@ -26,25 +26,12 @@
      </widget>
     </item>
     <item row="0" column="2">
-     <widget class="QLabel" name="MassStorageLabel">
+     <widget class="QLabel" name="massStorageLabel">
       <property name="text">
        <string>Mass Storage: </string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QColumnView" name="FastStorageView">
-      <property name="frameShape">
-       <enum>QFrame::Box</enum>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>10</width>
-        <height>10</height>
-       </size>
       </property>
      </widget>
     </item>
@@ -67,14 +54,14 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="MoveToFastButton">
+       <widget class="QPushButton" name="moveToFastButton">
         <property name="text">
          <string>&lt;--</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="MoveToMassButton">
+       <widget class="QPushButton" name="moveToMassButton">
         <property name="text">
          <string>--&gt;</string>
         </property>
@@ -95,10 +82,35 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="2">
-     <widget class="QTableView" name="MassStorageView">
+    <item row="1" column="0">
+     <widget class="QListView" name="fastStorageView">
       <property name="frameShape">
        <enum>QFrame::Box</enum>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::ExtendedSelection</enum>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>10</width>
+        <height>10</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QListView" name="massStorageView">
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::ExtendedSelection</enum>
       </property>
       <property name="iconSize">
        <size>
@@ -144,5 +156,38 @@
  <resources>
   <include location="ssm.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>fastStorageView</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>massStorageView</receiver>
+   <slot>clearSelection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>334</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>809</x>
+     <y>247</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>massStorageView</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>fastStorageView</receiver>
+   <slot>clearSelection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>903</x>
+     <y>247</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>380</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
