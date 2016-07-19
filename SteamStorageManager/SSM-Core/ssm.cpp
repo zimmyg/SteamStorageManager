@@ -1,5 +1,6 @@
 #include "ssm.h"
 #include "qdebug.h"
+#include "qdir.h"
 
 ssm::ssm(QWidget *parent)
 	: QMainWindow(parent)
@@ -9,8 +10,36 @@ ssm::ssm(QWidget *parent)
 	fastViewModel = new QStringListModel( this );
 	massViewModel = new QStringListModel( this );
 
-	fastViewModel->setStringList( QStringList( { "A", "B", "C" } ) );
-	massViewModel->setStringList( QStringList( { "D", "E", "F" } ) );
+	QDir fastDir = QDir("C:\\Program Files (x86)\\Steam\\steamapps\\common");
+	QDir massDir = QDir("D:\\Steam Storage");
+
+	// Symlink stuff doesn't work on Windows. Thanks for the heads up documentation!! /s
+	fastDir.setFilter( QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot );
+	massDir.setFilter( QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot );
+
+	QStringList fastList = QStringList();
+	QStringList massList = QStringList();
+
+	for each ( QFileInfo fInfo in fastDir.entryInfoList() )
+	{
+		if( fInfo.canonicalFilePath().compare(fInfo.absoluteFilePath()) == 0 )
+		{
+			fastList.append( fInfo.fileName() );
+		}
+	}
+	fastViewModel->sort( 0 );
+
+	for each ( QFileInfo fInfo in massDir.entryInfoList() )
+	{
+		if( fInfo.canonicalFilePath().compare( fInfo.absoluteFilePath() ) == 0 )
+		{
+			massList.append( fInfo.fileName() );
+		}
+	}
+	massViewModel->sort( 0 );
+
+	fastViewModel->setStringList( fastList );
+	massViewModel->setStringList( massList );
 
 	ui.fastStorageView->setModel( fastViewModel );
 	ui.massStorageView->setModel( massViewModel );
@@ -27,8 +56,6 @@ ssm::~ssm()
 
 void ssm::on_moveToFastButton_clicked()
 {
-	qDebug() << "Move to Fast Clicked!";
-
 	QModelIndexList indices = ui.massStorageView->selectionModel()->selectedIndexes();
 	while( indices.size() ) {
 		QModelIndex toRemove = indices.first();
@@ -41,12 +68,12 @@ void ssm::on_moveToFastButton_clicked()
 
 		indices = ui.massStorageView->selectionModel()->selectedIndexes();
 	}
+
+	fastViewModel->sort( 0 );
 }
 
 void ssm::on_moveToMassButton_clicked()
 {
-	qDebug() << "Move to Mass Clicked!";
-
 	QModelIndexList indices = ui.fastStorageView->selectionModel()->selectedIndexes();
 	while( indices.size() ) {
 		QModelIndex toRemove = indices.first();
@@ -59,6 +86,8 @@ void ssm::on_moveToMassButton_clicked()
 
 		indices = ui.fastStorageView->selectionModel()->selectedIndexes();
 	}
+
+	massViewModel->sort( 0 );
 }
 
 void ssm::on_fastStorageView_clicked()
